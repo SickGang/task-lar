@@ -1,7 +1,8 @@
 <template>
   <div id="app">
     <div class="container">
-      <h5 class="text-left">Список дел: {{tasks.length}}</h5>
+      <h5 class="text-left" v-if="tasks.length > 0">Список дел: {{tasks.length}} </h5>
+      <h5 class="text-left" v-else>Список дел пуст</h5>
       <table class="table table-hover table-borded table-striped">
         <thead class="thead-dark">
         <tr>
@@ -28,6 +29,8 @@
           <td></td>
           <td>
             <button @click="addTask()" class="btn-small green mr-2">Добавить</button>
+            <br>
+            <span class="text-uppercase" v-if="error">Заполните поля!</span>
           </td>
         </tr>
       </table>
@@ -62,7 +65,8 @@ export default {
       },
       filter: 'all',
       tasks: [],
-      idForTodo: 0
+      idForTodo: 0,
+      error: false
     }
   },
   mounted () {
@@ -95,7 +99,10 @@ export default {
         })
         this.newTask.title = ''
         this.newTask.date = ''
+        this.error = false
         localStorage.setItem('todos', JSON.stringify(this.tasks))
+      } else {
+        this.error = true
       }
     },
     deleteTask (index) {
