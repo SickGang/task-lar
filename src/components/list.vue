@@ -1,6 +1,6 @@
 <template>
-  <tr :class="{yellow: task.checked}">
-    <th scope="row">{{index + 1}}</th>
+  <tr>
+    <th scope="row">{{task.id}}</th>
     <td>{{task.title}}</td>
     <td>{{task.date}}</td>
     <td>
@@ -10,9 +10,29 @@
       </label>
     </td>
     <td>
-      <button @click="editTask(task,index)" class="btn-small blue mr-2"><i class="large material-icons">edit</i></button>
+      <button @click="isModal = true" class="btn-small blue mr-2"><i class="large material-icons">edit</i></button>
       <button @click="deleteTask(index)" class="btn-small red"><i class="large material-icons">delete</i></button>
     </td>
+    <div class="modal-wrap" v-show="isModal">
+        <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Окно редактирования</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="isModal = false">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <input type="text" v-model="task.title">
+            <input type="text" v-model="task.date">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn red" data-dismiss="modal" @click="isModal = false">Закрыть</button>
+            <button type="button" class="btn green" @click="saveEditTask(index)">Сохранить изменения</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </tr>
 </template>
 
@@ -25,8 +45,10 @@ export default {
       task: {
         title: this.tasks.title,
         date: this.tasks.date,
-        checked: this.tasks.checked
-      }
+        checked: this.tasks.checked,
+        id: this.tasks.id
+      },
+      isModal: false
     }
   },
   methods: {
@@ -42,8 +64,16 @@ export default {
       })
       localStorage.setItem('todos', JSON.stringify(data))
     },
-    editTask (task, index) {
-      this.$emit('editTask', task, index)
+    saveEditTask (id) {
+      this.isModal = false
+      const data = JSON.parse(localStorage.getItem('todos'))
+      data.forEach((element, index) => {
+        if (id === index) {
+          element.title = this.task.title
+          element.date = this.task.date
+        }
+      })
+      localStorage.setItem('todos', JSON.stringify(data))
     }
   }
 }
@@ -51,5 +81,11 @@ export default {
 </script>
 
 <style scoped>
+
+.modal-wrap {
+  position: absolute;
+  top: 30%;
+  left: 40%;
+}
 
 </style>

@@ -14,12 +14,11 @@
         </thead>
         <tbody class="table-striped">
           <list
-          v-for="(task,index) in tasksFiltered" :key="task.title"
+          v-for="(task,index) in tasksFiltered" :key="task.id"
           :tasks="task"
           :index="index"
           :class="{yellow: task.checked}"
           @deleteTask="deleteTask"
-          @editTask="editTask"
           />
         </tbody>
         <tr>
@@ -28,7 +27,7 @@
           <td><input type="text" placeholder="Введите дату выполнения задачи" v-model="newTask.date"></td>
           <td></td>
           <td>
-            <button @click="addTask()" class="btn-small green mr-2"><i class="large material-icons">add</i></button>
+            <button @click="addTask()" class="btn-small green mr-2">Добавить</button>
           </td>
         </tr>
       </table>
@@ -40,29 +39,9 @@
         </div>
         <div class="input_check-all col-6 text-right">
           <label>
-            <input @click="checkAll" type="checkbox" />
+            <input @click="checkAll" type="checkbox"/>
             <span>Завершить все</span>
           </label>
-        </div>
-      </div>
-      <div class="" v-show="isModal">
-         <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Редактировать</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <input type="text" v-model="editidTask.title">
-              <input type="text" v-model="editidTask.date">
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="isModal = false">Close</button>
-              <button type="button" class="btn btn-primary" @click="saveEditTask">Save changes</button>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -82,13 +61,8 @@ export default {
         checked: false
       },
       filter: 'all',
-      isModal: false,
-      editidTask: {
-        title: '',
-        date: '',
-        id: ''
-      },
-      tasks: []
+      tasks: [],
+      idForTodo: 0
     }
   },
   mounted () {
@@ -111,11 +85,13 @@ export default {
   },
   methods: {
     addTask () {
+      this.idForTodo++
       if (this.newTask.title !== '' && this.newTask.date !== '') {
         this.tasks.push({
           title: this.newTask.title,
           date: this.newTask.date,
-          checked: false
+          checked: false,
+          id: this.idForTodo
         })
         this.newTask.title = ''
         this.newTask.date = ''
@@ -131,22 +107,6 @@ export default {
         task.checked = event.target.checked
       })
       localStorage.setItem('todos', JSON.stringify(this.tasks))
-    },
-    editTask (task, index) {
-      this.isModal = true
-      this.editidTask.title = task.title
-      this.editidTask.date = task.date
-      this.editidTask.id = index
-    },
-    saveEditTask () {
-      this.tasks.map((task, index) => {
-        if (index === this.editidTask.id) {
-          console.log(this.editTask.date)
-          // task.date = this.editTask.date
-          // task.title = this.editTask.title
-        }
-        // console.log(this.tasks)
-      })
     }
   },
   components: {
